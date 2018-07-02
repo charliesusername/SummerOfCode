@@ -1,0 +1,23 @@
+Lesson 1:
+Part A: What is p5.js? Why are we going to learn how to use it?
+
+We learn to program so that we can create and express ourselves without having to use programs created by other people or large corporations. It frees us to create precisely what we want.
+
+Not only can we create for ourselves, javascript lets us put our programs on the web browser and easily share it with others.
+
+processing was created in 2001 by Cary Roos and Ben Fry ontop of the Java framework. Java is so important because it easily allows you to use applets that run in the web browser.
+
+Browsers today, typically use javascript.
+
+around 2013 some developers went to the task to recreate Processing but on the javascript framework.
+Lauren McCarthy developed p5.js. This is not to be confused with processing.js which is a language that allows developers to write in java and convert it to the javascript the browser recognizes.
+
+p5.js is a environment that runs on javascript and allows you to make games, animations and images displayed onto the browser.
+
+
+
+
+p5.js is a two things. 1 is that it's a library of functions that vastly simplifies javascript so that users can learn how to program, without having to worry about all of the everything you may need.
+
+
+
