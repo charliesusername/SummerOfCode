@@ -1,16 +1,11 @@
-function Asteroid(pos) {
-    if (pos) {
-        this.pos = pos.copy();
-    } else {
-        this.pos = createVector(random(width), random(height));
-    }
-    this.r = floor(random(15, 50));
-    this.total = floor(random(10, 15));
+function Asteroid(pos, r) {
+    pos ? this.pos = pos.copy() : this.pos = createVector(random(width), random(height));
+    r ? this.r = r * 0.5 : this.r = floor(random(15, 50));
+    this.sides = floor(random(10, 15));
     this.offset = [];
-    for (var i = 0; i < this.total; i++) {
-        this.offset[i] = random(-15, 5);
+    for (var i = 0; i < this.sides; i++) {
+        this.offset[i] = random(-this.r / 4, this.r / 4);
     }
-
     this.vel = p5.Vector.random2D();
 
     this.render = function () {
@@ -19,10 +14,9 @@ function Asteroid(pos) {
         strokeWeight(2);
         stroke(255);
         noFill();
-        // ellipse(0,0,this.r*2,this.r*2);
         beginShape()
-        for (var i = 0; i < this.total; i++) {
-            var angle = map(i, 0, this.total, 0, TWO_PI);
+        for (var i = 0; i < this.sides; i++) {
+            var angle = map(i, 0, this.sides, 0, TWO_PI);
             var r = this.r + this.offset[i];
             var x = r * cos(angle);
             var y = r * sin(angle);
@@ -50,8 +44,10 @@ function Asteroid(pos) {
     }
 
     this.breakup = function () {
-        var newA = [];
-        newA[0] = new Asteroid(this.pos);
-        newA[1] = new Asteroid(this.pos);
+        var child = [];
+        child[0] = new Asteroid(this.pos, this.r);
+        child[1] = new Asteroid(this.pos, this.r);
+        
+        return child;
     }
 }
