@@ -1,95 +1,123 @@
-var hero;
-var step = [];
-var blockSize = 40;
-var grav = [0, 0.6];
+var grav = 0.6;
+var plat = [];
+var holdLeft = holdRight = false;
 
 function setup() {
-    createCanvas(400, 400);
-    hero = new Block(width / 5, 1, [255, 175, 9]);
+    createCanvas(500, 500);
 
-    step[0] = new Block(3 * width / 5, 1, [140]);
-    //step[1] = new Block(2 * width / 5, 2, [140]);
-    //step[2] = new Block(4 * width / 5, 3, [140]);
+    //create level using random procedure
+    for (i = 0; i < 50; i++) {
+        x = random() * width;
+        y = random() * height;
+        w = random() * 100 + 30;
+        h = random() * 30 + 20;
+        plat[i] = new Block(x, y, w, h, [0, 0, 0]);
+    }
+
+    // create player
+    hero = new Block(20, height - 100, 20, 20, [0, 130, 0]);
 }
 
 function draw() {
     background(255);
-    hero.render();
-    for(var i = 0; i < step.length; i++){
-        step[i].render();
-    }   
 
-    if(keyIsDown(RIGHT_ARROW)){
-        hero.vel.x = 3;
-    } else if(keyIsDown(LEFT_ARROW)){
-        hero.vel.x = -3;
-    } else {
-        hero.vel.x = 0;
-    }
-    for(var i = 0; i < step.length; i++){
-        hero.collide(step[i]);
+    for (i = 0; i < 50; i++) {
+        plat[i].render();
     }
 
     hero.update();
-    hero.applyForce(grav);
+    hero.render();
+    strokeWeight(2);
+    stroke(0);
+    line(0, height, width, height);
+
 }
 
-
-// this relates to jumping
-function keyPressed() {
-    if (keyCode === UP_ARROW && hero.jumping === false) {
-        hero.vel.y = -15;
-        hero.jumping = true;
-    }
-}
-function keyReleased() {
-    if (hero.vel.y < 0) {
-        hero.vel.y = 0;
-    }
-}
-
-function Block(sx, sy, col) {
-    this.r = blockSize;
-    this.color = col;
-    this.jumping = false;
-    
-    this.pos = createVector(sx, height - this.r * sy);
-    this.vel = createVector(0, 0)
-    this.acc = createVector(0, 0);
-    this.level = floor((height - this.pos.y)/this.r);
+function Block(x, y, w, h, c) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.onGround = false
+    this.color = c
 
     this.render = function () {
-        noStroke();
         fill(this.color);
-        rect(this.pos.x, this.pos.y, this.r, this.r);
+        noStroke();
+        rect(this.x, this.y, this.w, this.h);
     }
 
-    this.applyForce = function (force) {
-        this.acc.add(force);
-    }
+    //interaction
+    this.vx = this.vy = 0;
 
     this.update = function () {
-        this.vel.add(this.acc);
-        this.pos.add(this.vel);
-        this.acc.mult(0);
+        if (holdLeft === true) {
+            this.vx = -2;
+        }
+        if (holdRight === true) {
+            this.vx = 2;
+        }
+        this.x += this.vx;
+        this.y += this.vy;
 
-        if (this.pos.y > height - this.r * this.level) {
-            this.pos.y = height - this.r * this.level;
-            this.acc = createVector(0, 0);
-            this.jumping = false;
+        this.onGround = false;
+        for (var i = 0; i < 50; i++) {
+            if (this.x > plat[i].x 
+                && this.x < plat[i].x + plat[i].w
+                && this.y + this.h > plat[i].y 
+                && this.y < plat[i].y + plat[i].h) {
+                this.y = plat[i].y - this.h;
+                this.onGround = true;
+
+            }
+        }
+        if (this.y > height - this.h) {
+            this.y = height - this.h
+            this.onGround = true;
+        }
+
+
+
+
+
+
+        if (this.onGround === true) {
+            this.vx *= 0.8;
+
+        } else {
+            this.vy += grav;
         }
     }
+}
 
-    this.collide = function(other){
-        var d = dist (this.pos.x, this.pos.y, other.pos.x, other.pos.y);
-        if(d < this.r * 1.5){
-            if(this.pos.x + this.r > other.pos.x && this.pos.x < other.pos.x + other.r){
-                if(this.pos.y + this.r < other.pos.y){
-                    this.level = other.level + 1;
-                } 
-            }   
-        }   else {
-            this.level = 1;
-        }  
+function keyPressed() {
+    if (keyCode === LEFT_ARROW) {
+        holdLeft = true;
+    }
+    if (keyCode === UP_ARROW) {
+        if (hero.onGround === true) {
+            hero.vy = -10;
+        }
+    }
+    if (keyCode === RIGHT_ARROW) {
+        holdRight = true;
     }
 }
+
+function keyReleased() {
+    if (keyCode === LEFT_ARROW) {
+        holdLeft = false;
+    }
+    if (keyCode === UP_ARROW) {
+        if (hero.vy < -3) {
+            hero.vy = -3;
+        }
+    }
+    if (keyCode === RIGHT_ARROW) {
+        holdRight = false;
+    }
+}
+
+
+
+
