@@ -22,12 +22,14 @@ function setup() {
             } else {
                 colour = [220, 220, 220];
             }
+
+            // initial piece placement
             if (j < 3 && checkerPattern) {
-                piece = 0;
+                piece = 0; // white
             } else if (j > 4 && checkerPattern) {
-                piece = 1;
+                piece = 1; // black
             } else {
-                piece = -1;
+                piece = -1; // none
             }
 
             board[i][j] = new Checker(i, j, colour, piece);
@@ -104,14 +106,25 @@ class Checker {
     select(row, col) {
         this.selected = true;
         console.log(row, col);
-        if(this.piece === 0){ // black pieces can only go downward
-            for(var i = -1; i < 2; i+=2){                
-                if(board[row + i][col + 1].piece === -1){
-                    board[row + i][col + 1].piece = 0;
-                    board[row + i][col + 1].shaded = true;
-                }
-            }            
+        var availableMoves = [];
 
+        if (this.piece === 0) { // white
+            // Left-Right edge conditions
+            if (col === 0) {
+                availableMoves[0] = board[row+1][col+1];
+            } else if (col === gridSide) {
+                availableMoves[0] = board[row+1][col-1];
+            } else  {
+                availableMoves[0] = board[row+1][col+1];
+                availableMoves[1] = board[row+1][col-1];
+            }
+        }
+
+        for(var i = 0; i < availableMoves.length; i++){
+            console.log(availableMoves[i]);
+            if(availableMoves[i].piece === -1){
+                availableMoves[i].shaded = true;
+            }
         }
 
 
