@@ -10,6 +10,7 @@ function setup() {
 
     ball = new Mass(width / 2 + 140, height / 2, 100, 0, 0)
     setInterval(update, 1000 / delay);
+    setInterval(textUpdate, 1000/(0.5*delay))
 
     angleMode(RADIANS);
 }
@@ -28,6 +29,10 @@ function update() {
     ball.render();
 }
 
+function textUpdate(){
+    
+}
+
 class Mass {
     constructor(x, y, m, vx, vy) {
         this.x = x;
@@ -44,6 +49,16 @@ class Mass {
     }
 
     render() {
+        
+        stroke(255)
+        strokeWeight(8);
+        line(0,0,this.x,this.y);
+        line(width,0,this.x,this.y);
+        line(width,height,this.x,this.y);
+        line(0,height,this.x,this.y);
+        
+
+
         fill(255);
         ellipse(this.x, this.y, 100, 100);
 
@@ -67,7 +82,7 @@ class Mass {
         textAlign(CENTER, CENTER);
         textSize(30);
         fill(0);
-        text(str(round(this.vx*10)/10),this.x,this.y)
+        text(str(round((this.x-300)*10)/10),this.x,this.y)
 
     }
 }
