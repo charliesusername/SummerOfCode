@@ -17,7 +17,9 @@ function draw() {
         pellet[i].update();
         if (pellet[i].y <= 0) {
             pellet.splice(i, 1);
+            break;
         }
+
         for (var j = enemies.length - 1; j >= 0; j--) {
             if (pellet[i].hit(enemies[j])) {
                 pellet.splice(i, 1);
@@ -30,13 +32,13 @@ function draw() {
 
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].update();
-        if(enemies[i].y - enemies[i].r >= height){
+        if (enemies[i].y - enemies[i].r >= height) {
             //enemies[i] = new Enemy(random(width), -random(height));
-            enemies.splice(i,1);
+            enemies.splice(i, 1);
         }
     }
-    for (var i = pellet.length - 1; i >= 0; i--) {        
-        pellet[i].render();        
+    for (var i = pellet.length - 1; i >= 0; i--) {
+        pellet[i].render();
     }
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].render();
@@ -52,6 +54,7 @@ function keyPressed() {
     if (keyCode === 49) { player.gunMode = 'lineGun' }
     if (keyCode === 50) { player.gunMode = 'sineGun' }
     if (keyCode === 51) { player.gunMode = 'rainbowGun' }
+    if (keyCode === 52) { player.gunMode = 'shotGun' }
 }
 
 function keyReleased() {
@@ -123,6 +126,11 @@ class Ship {
         }
 
         if (this.shoot === true) {
+            if (this.gunMode === 'shotGun') {
+                for (var i = -1; i < 2; i++) {
+                    pellet.push(new Pellet(this.x, this.y, this.gunMode, i));
+                }
+            }
             pellet.push(new Pellet(this.x, this.y, this.gunMode));
             this.shoot = false;
         }
@@ -130,27 +138,27 @@ class Ship {
 }
 
 class Pellet {
-    constructor(x, y, type) {
+    constructor(x, y, type, dir) {
         this.x = x;
         this.startX = x;
         this.y = y;
         this.startY = y;
-        this.v = -3;
-        this.r = 25;
+        this.v = -5;
+        this.r = 5;
         this.color = [255, 255, 255]
 
         this.gunType = type || 'lineGun'
-        this.colorMix = 0
+        this.colorMix = 0;
+        this.dir = dir || 0;
 
         this.amplitude = 100;
         this.omega = 3;
         this.phase = 0;
-
     }
 
     render() {
         fill(this.color);
-        ellipse(this.x, this.y, this.r * 3 / 5, this.r);
+        rect(this.x, this.y, this.r, this.r * 4);
     }
 
     update() {
@@ -168,53 +176,53 @@ class Pellet {
                     this.colorMix += 1;
                 }
                 break;
+            case 'shotGun':
+                this.x += this.dir;
+                break;
         }
         this.y += this.v;
     }
 
     hit(other) {
-        var d = dist(this.x, this.y, other.x, other.y);
-        if (d < other.r) {
+        if ((this.y < other.y + other.h)
+            && (this.x < other.x + other.w)
+            && (this.x + this.w > other.x)
+            && (this.y + this.h > other.y)) {
             return true;
         } else {
             return false;
         }
     }
-
-
-
 }
 
 class Enemy {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.r = 40;
+        this.w = 20;
+        this.h = 20;
         this.v = 1;
-
     }
 
     render() {
         fill(255);
-        ellipse(this.x, this.y, this.r * 2, this.r * 2);
+        rect(this.x, this.y, this.w, this.h);
     }
 
     update() {
         this.y += this.v;
     }
 
-    destroy(){
+    destroy() {
         particles.push(new particleField(this.x, this.y, this.v, this.r));
     }
 }
 
-class particleField{
-    constructor(x,y,v,r){
+class particleField {
+    constructor(x, y, v, r) {
         this.x = x;
         this.y = y;
         this.v = v;
-        this.r = r;        
+        this.r = r;
     }
-
 }
-
